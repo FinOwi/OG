@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>OGKasir Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#131009; --card:#1d1810; --card2:#242015; --line:#3a2f1c;
+  --gold:#e8b34b; --gold2:#f6d47c; --txt:#f4ecda; --mut:#a89878;
+  --green:#4ade80; --amber:#fbbf24; --red:#f87171;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1060px;margin:0 auto;padding:20px 16px 60px}
+.brand{display:flex;align-items:center;gap:12px;margin:6px 0 20px}
+.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#f6d47c,#c98f2b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#241a08;font-size:19px;box-shadow:0 4px 18px rgba(232,179,75,.35)}
+.brand h1{margin:0;font-size:20px;font-weight:800}
+.brand small{display:block;color:var(--mut);font-weight:500;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2.sec{font-size:15px;margin:0 0 12px;font-weight:700}
+label{display:block;font-size:12px;color:var(--mut);font-weight:600;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px 13px;border-radius:11px;border:1px solid var(--line);background:#14110b;color:var(--txt);font-size:15px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+button{font-family:inherit;cursor:pointer}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#f6d47c,#d99f35);color:#241a08;width:100%}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);color:var(--gold2);border:1px solid var(--line);width:auto;padding:10px 16px;font-size:14px}
+.btn.sm{width:auto;padding:8px 14px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:140px}
+.err{background:#3a1414;border:1px solid #7f2d2d;color:#fca5a5;padding:11px 13px;border-radius:11px;font-size:13px;margin-top:12px;display:none}
+.okmsg{background:#0f2e1c;border:1px solid #1d5c37;color:#86efac;padding:11px 13px;border-radius:11px;font-size:13px;margin-top:12px;display:none}
+/* login */
+#loginView{max-width:400px;margin:8vh auto 0}
+.tabs{display:flex;gap:8px;margin-bottom:4px}
+.tabs button{flex:1;background:none;border:0;color:var(--mut);font-weight:700;font-size:14px;padding:10px;border-bottom:2px solid var(--line)}
+.tabs button.on{color:var(--gold2);border-color:var(--gold)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat .n{font-size:26px;font-weight:800;color:var(--gold2)}
+.stat .l{font-size:12px;color:var(--mut);margin-top:2px}
+/* main tabs */
+.mtabs{display:flex;gap:8px;margin:0 0 14px;overflow-x:auto}
+.mtabs button{background:var(--card);border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:14px;padding:10px 18px;border-radius:999px;white-space:nowrap}
+.mtabs button.on{background:linear-gradient(135deg,#f6d47c,#d99f35);color:#241a08;border-color:transparent}
+/* result code */
+.codeout{font-size:19px;font-weight:800;letter-spacing:1px;background:#14110b;border:1px dashed var(--gold);border-radius:12px;padding:16px;text-align:center;margin-top:14px;line-height:1.8;color:var(--gold2);word-break:break-all}
+/* table */
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
+th{background:var(--card2);color:var(--mut);text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:first-child td{border-top:0}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.b.aktif{background:rgba(74,222,128,.14);color:var(--green)}
+.b.mau_habis{background:rgba(251,191,36,.14);color:var(--amber)}
+.b.kedaluwarsa{background:rgba(248,113,113,.14);color:var(--red)}
+.mono{font-family:ui-monospace,monospace;font-size:12px}
+.toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.toolbar input{max-width:280px}
+.spacer{flex:1}
+.headbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.userchip{font-size:13px;color:var(--mut)}
+.hidden{display:none!important}
+.foot{margin-top:26px;color:var(--mut);font-size:12px;text-align:center;line-height:1.7}
+.verify-ok{border:1px solid #1d5c37;background:#0f2e1c;color:#86efac;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
+.verify-bad{border:1px solid #7f2d2d;background:#3a1414;color:#fca5a5;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ LOGIN ============ -->
+  <div id="loginView">
+    <div class="brand" style="justify-content:center">
+      <div class="mark">OG</div>
+      <h1>OGKasir Admin<small>Panel penjual — khusus pemilik</small></h1>
+    </div>
+    <div class="card">
+      <div class="tabs">
+        <button id="tabLogin" class="on" onclick="showTab('login')">Masuk</button>
+        <button id="tabSignup" onclick="showTab('signup')">Daftar</button>
+      </div>
+      <div id="paneLogin">
+        <label>Email</label>
+        <input id="liEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
+        <label>Kata sandi</label>
+        <input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password">
+        <div style="height:14px"></div>
+        <button class="btn" onclick="doLogin()">Masuk</button>
+      </div>
+      <div id="paneSignup" class="hidden">
+        <label>Email</label>
+        <input id="suEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
+        <label>Kata sandi</label>
+        <input id="suPass" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password">
+        <div style="height:14px"></div>
+        <button class="btn" onclick="doSignup()">Buat Akun</button>
+        <p style="font-size:12px;color:var(--mut);line-height:1.6">Akun baru hanya bisa dipakai kalau emailnya sudah didaftarkan sebagai admin.</p>
+      </div>
+      <div class="err" id="loginErr"></div>
+      <div class="okmsg" id="loginOk"></div>
+    </div>
+  </div>
+
+  <!-- ============ APP ============ -->
+  <div id="appView" class="hidden">
+    <div class="headbar">
+      <div class="brand" style="margin:0">
+        <div class="mark">OG</div>
+        <h1>OGKasir Admin<small>Panel penjual</small></h1>
+      </div>
+      <div class="row" style="flex:0;align-items:center">
+        <span class="userchip" id="userEmail"></span>
+        <button class="btn ghost sm" onclick="doLogout()">Keluar</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="n" id="stAktif">–</div><div class="l">Lisensi aktif</div></div>
+      <div class="stat"><div class="n" id="stHampir">–</div><div class="l">Habis ≤ 7 hari</div></div>
+      <div class="stat"><div class="n" id="stOmzet">–</div><div class="l">Omzet bulan ini</div></div>
+      <div class="stat"><div class="n" id="stCust">–</div><div class="l">Pelanggan</div></div>
+    </div>
+
+    <div class="mtabs">
+      <button id="mtGen" class="on" onclick="showMain('gen')">⚡ Generator</button>
+      <button id="mtHist" onclick="showMain('hist')">📋 Riwayat</button>
+      <button id="mtVer" onclick="showMain('ver')">🔍 Verifikasi</button>
+    </div>
+
+    <!-- Generator -->
+    <div id="paneGen" class="card">
+      <h2 class="sec">Buat kode aktivasi</h2>
+      <label>Kode device pelanggan (dari layar kunci aplikasi)</label>
+      <input id="gDev" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:1px">
+      <div class="row">
+        <div>
+          <label>Nama / usaha pembeli *</label>
+          <input id="gBuyer" placeholder="cth: Warkop Bang Jago">
+        </div>
+        <div>
+          <label>No. WA (opsional)</label>
+          <input id="gWa" placeholder="cth: 0812xxxx" inputmode="tel">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Durasi</label>
+          <select id="gPlan" onchange="planChanged()">
+            <option value="30">30 hari — Rp 50rb</option>
+            <option value="90">90 hari — Rp 130rb</option>
+            <option value="365">365 hari — Rp 500rb</option>
+            <option value="99999">♾️ Unlimited (founder)</option>
+          </select>
+        </div>
+        <div>
+          <label>Harga (Rp)</label>
+          <input id="gAmount" type="number" value="50000" min="0" inputmode="numeric">
+        </div>
+      </div>
+      <label>Catatan (opsional)</label>
+      <input id="gNote" placeholder="cth: bayar via QRIS">
+      <div style="height:14px"></div>
+      <button class="btn" onclick="doGenerate()">⚡ Buatkan Kode</button>
+      <div class="err" id="genErr"></div>
+      <div id="genResult" class="hidden">
+        <div class="codeout" id="genCode"></div>
+        <p style="font-size:13px;color:var(--mut);text-align:center" id="genExp"></p>
+        <div class="row">
+          <button class="btn ghost" onclick="copyGen()">📋 Salin Kode</button>
+          <button class="btn ghost hidden" id="waBtn" onclick="sendWA()">💬 Kirim via WA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat -->
+    <div id="paneHist" class="card hidden">
+      <h2 class="sec">Riwayat kode aktivasi</h2>
+      <div class="toolbar">
+        <input id="histQ" placeholder="🔎 Cari nama / device / kode…" oninput="renderHist()">
+        <div class="spacer"></div>
+        <button class="btn ghost sm" onclick="exportCSV()">⬇️ Ekspor CSV</button>
+        <button class="btn ghost sm" onclick="loadAll()">🔄 Muat ulang</button>
+      </div>
+      <div class="tblwrap"><table>
+        <thead><tr>
+          <th>Tanggal</th><th>Pembeli</th><th>Device</th><th>Paket</th>
+          <th>Harga</th><th>Kedaluwarsa</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="histBody"><tr><td colspan="8" style="text-align:center;color:var(--mut)">Memuat…</td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- Verifikasi -->
+    <div id="paneVer" class="card hidden">
+      <h2 class="sec">Verifikasi kode aktivasi</h2>
+      <label>Kode aktivasi</label>
+      <input id="vCode" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase">
+      <label>Kode device</label>
+      <input id="vDev" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase">
+      <div style="height:14px"></div>
+      <button class="btn" onclick="doVerify()">🔍 Cek Kode</button>
+      <div class="err" id="verErr"></div>
+      <div id="verResult"></div>
+    </div>
+
+    <p class="foot">OGKasir Admin · FinOwi Id<br>Halaman ini tidak terindeks Google.</p>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = 'https://ypdfdaxgqgkaupsyiauy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZGZkYXhncWdrYXVwc3lpYXV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MjQ2MzEsImV4cCI6MjEwNzQwMDYzMX0.w9d2wZhcdgevpSEsFcPYt1x122w09X2Ai1GFkAIlLRE';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = id => document.getElementById(id);
+const PRICES = {30:50000, 90:130000, 365:500000, 99999:0};
+let HIST = [];
+
+const fmtRp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const fmtDate = iso => {
+  if(!iso) return '–';
+  const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso);
+  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+};
+const fmtDateTime = iso => {
+  if(!iso) return '–';
+  const d = new Date(iso);
+  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+};
+function showErr(id, msg){
+  const e = $(id); e.textContent = msg; e.style.display = 'block';
+}
+function hideErr(id){ $(id).style.display = 'none'; }
+function rpcErr(err){
+  const m = String((err && err.message) || err || '');
+  if(m.includes('forbidden')) return 'Email ini belum terdaftar sebagai admin.';
+  if(m.includes('bad_device')) return 'Kode device tidak valid (8 karakter A-Z/2-9).';
+  if(m.includes('bad_plan')) return 'Durasi tidak valid.';
+  if(m.includes('bad_buyer')) return 'Nama pembeli wajib diisi.';
+  return 'Gagal: ' + m;
+}
+
+/* ---------- tab login ---------- */
+function showTab(which){
+  $('tabLogin').classList.toggle('on', which==='login');
+  $('tabSignup').classList.toggle('on', which==='signup');
+  $('paneLogin').classList.toggle('hidden', which!=='login');
+  $('paneSignup').classList.toggle('hidden', which!=='signup');
+  hideErr('loginErr'); $('loginOk').style.display='none';
+}
+async function doLogin(){
+  hideErr('loginErr');
+  const { error } = await sb.auth.signInWithPassword({
+    email: $('liEmail').value.trim(), password: $('liPass').value
+  });
+  if(error){ showErr('loginErr', 'Gagal masuk: ' + error.message); return; }
+  enterApp();
+}
+async function doSignup(){
+  hideErr('loginErr'); $('loginOk').style.display='none';
+  const email = $('suEmail').value.trim(), pass = $('suPass').value;
+  if(pass.length < 6){ showErr('loginErr', 'Kata sandi minimal 6 karakter.'); return; }
+  const { error } = await sb.auth.signUp({ email, password: pass });
+  if(error){ showErr('loginErr', 'Gagal daftar: ' + error.message); return; }
+  const ok = $('loginOk');
+  ok.textContent = 'Akun dibuat. Sekarang masuk lewat tab "Masuk".';
+  ok.style.display = 'block';
+  showTab('login'); $('liEmail').value = email;
+  $('loginOk').style.display='block';
+  $('loginOk').textContent = 'Akun dibuat. Silakan masuk.';
+}
+async function doLogout(){
+  await sb.auth.signOut();
+  $('appView').classList.add('hidden');
+  $('loginView').classList.remove('hidden');
+}
+async function enterApp(){
+  const { data } = await sb.auth.getUser();
+  $('userEmail').textContent = (data.user && data.user.email) || '';
+  $('loginView').classList.add('hidden');
+  $('appView').classList.remove('hidden');
+  loadAll();
+}
+
+/* ---------- tab utama ---------- */
+function showMain(which){
+  ['gen','hist','ver'].forEach(t => {
+    $('mt' + t[0].toUpperCase() + t.slice(1)).classList.toggle('on', t===which);
+    $('pane' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', t!==which);
+  });
+}
+
+/* ---------- generator ---------- */
+$('gDev').addEventListener('input', e => {
+  let v = e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0,8);
+  e.target.value = v.length > 4 ? v.slice(0,4) + '-' + v.slice(4) : v;
+});
+function planChanged(){
+  const p = $('gPlan').value;
+  $('gAmount').value = PRICES[p] != null ? PRICES[p] : 0;
+}
+function normWA(w){
+  let d = String(w||'').replace(/\D/g, '');
+  if(d.startsWith('0')) d = '62' + d.slice(1);
+  return d;
+}
+async function doGenerate(){
+  hideErr('genErr'); $('genResult').classList.add('hidden');
+  const dev = $('gDev').value, buyer = $('gBuyer').value.trim();
+  const plan = parseInt($('gPlan').value, 10);
+  const amount = parseInt($('gAmount').value || '0', 10);
+  const wa = $('gWa').value.trim(), note = $('gNote').value.trim();
+  if(buyer === ''){ showErr('genErr', 'Nama pembeli wajib diisi.'); return; }
+  const { data, error } = await sb.rpc('license_issue', {
+    p_device: dev, p_plan_days: plan, p_buyer: buyer,
+    p_amount: amount, p_wa: wa || null, p_note: note || null
+  });
+  if(error){ showErr('genErr', rpcErr(error)); return; }
+  const row = data[0];
+  $('genCode').textContent = row.code;
+  $('genExp').textContent = 'Berlaku sampai ' + fmtDate(row.exp_date) +
+    (plan === 99999 ? ' (unlimited)' : '');
+  $('genResult').classList.remove('hidden');
+  const waNum = normWA(wa);
+  const wb = $('waBtn');
+  if(waNum){
+    wb.classList.remove('hidden');
+    wb.dataset.wa = waNum; wb.dataset.code = row.code; wb.dataset.exp = fmtDate(row.exp_date);
+  } else wb.classList.add('hidden');
+  try{ await navigator.clipboard.writeText(row.code); }catch(e){}
+  loadAll();
+}
+function copyGen(){
+  const t = $('genCode').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(t);
+}
+function sendWA(){
+  const b = $('waBtn');
+  const txt = 'Halo, berikut kode aktivasi OGKasir Anda:\n\n' + b.dataset.code +
+    '\n\nBerlaku sampai ' + b.dataset.exp +
+    '\n\nCara pakai: buka OGKasir → tempel kode di layar kunci → Aktifkan. Terima kasih 🙏';
+  window.open('https://wa.me/' + b.dataset.wa + '?text=' + encodeURIComponent(txt), '_blank');
+}
+
+/* ---------- riwayat ---------- */
+async function loadAll(){
+  const [s, h] = await Promise.all([
+    sb.rpc('license_stats'),
+    sb.rpc('license_list', { p_limit: 200 })
+  ]);
+  if(s.error){ console.warn(s.error); }
+  else {
+    const r = s.data[0] || {};
+    $('stAktif').textContent = r.aktif ?? '–';
+    $('stHampir').textContent = r.mau_habis ?? '–';
+    $('stOmzet').textContent = fmtRp(r.omzet_bulan_ini || 0);
+    $('stCust').textContent = r.total_pelanggan ?? '–';
+  }
+  if(h.error){ console.warn(h.error); HIST = []; }
+  else HIST = h.data || [];
+  renderHist();
+}
+const STATUS_LABEL = {aktif:'Aktif', mau_habis:'Mau habis', kedaluwarsa:'Kedaluwarsa'};
+function renderHist(){
+  const q = $('histQ').value.trim().toLowerCase();
+  const rows = HIST.filter(r => {
+    if(!q) return true;
+    return (r.buyer_name + ' ' + r.device_code + ' ' + r.code).toLowerCase().includes(q);
+  });
+  const tb = $('histBody');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--mut)">Belum ada data.</td></tr>';
+    return;
+  }
+  tb.innerHTML = rows.map(r => {
+    const dev = r.device_code.slice(0,4) + '-' + r.device_code.slice(4);
+    return '<tr>' +
+      '<td style="white-space:nowrap">' + fmtDateTime(r.issued_at) + '</td>' +
+      '<td><b>' + esc(r.buyer_name) + '</b>' + (r.buyer_wa ? '<br><span class="mono" style="color:var(--mut)">' + esc(r.buyer_wa) + '</span>' : '') + '</td>' +
+      '<td class="mono">' + dev + '</td>' +
+      '<td>' + esc(r.plan_label) + '</td>' +
+      '<td style="white-space:nowrap">' + fmtRp(r.amount_rp) + '</td>' +
+      '<td style="white-space:nowrap">' + fmtDate(r.exp_date) + '</td>' +
+      '<td><span class="badge b ' + r.status + '">' + STATUS_LABEL[r.status] + '</span></td>' +
+      '<td><button class="btn ghost sm" onclick="copyCode(\'' + r.code + '\')">Salin</button></td>' +
+    '</tr>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function copyCode(code){
+  const pretty = code.replace(/(.{4})/g, '$1-').replace(/-$/, '');
+  if(navigator.clipboard) navigator.clipboard.writeText(pretty);
+}
+function exportCSV(){
+  if(!HIST.length) return;
+  const head = 'Tanggal,Pembeli,WA,Device,Paket,Harga,Berlaku Sampai,Status,Kode\n';
+  const q = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+  const body = HIST.map(r => [
+    fmtDateTime(r.issued_at), r.buyer_name, r.buyer_wa||'',
+    r.device_code, r.plan_label, r.amount_rp, fmtDate(r.exp_date),
+    STATUS_LABEL[r.status]||r.status, r.code
+  ].map(q).join(',')).join('\n');
+  const blob = new Blob(["\ufeff" + head + body], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ogkasir-lisensi.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- verifikasi ---------- */
+async function doVerify(){
+  hideErr('verErr'); $('verResult').innerHTML = '';
+  const { data, error } = await sb.rpc('license_verify', {
+    p_code: $('vCode').value, p_device: $('vDev').value
+  });
+  if(error){ showErr('verErr', rpcErr(error)); return; }
+  const r = data[0];
+  const REASONS = {format:'Format kode salah (harus 24 karakter).', device:'Kode ini bukan untuk device tersebut.',
+                   sig:'Tanda tangan tidak cocok — kode palsu/rusak.', expired:'Kode sudah kedaluwarsa.'};
+  if(r.valid){
+    $('verResult').innerHTML = '<div class="verify-ok">✅ <b>Kode VALID.</b><br>Berlaku sampai ' + fmtDate(r.exp_date) + '.</div>';
+  } else {
+    $('verResult').innerHTML = '<div class="verify-bad">❌ <b>Kode TIDAK valid.</b><br>' + (REASONS[r.reason] || r.reason) +
+      (r.exp_date ? '<br>Kedaluwarsa: ' + fmtDate(r.exp_date) : '') + '</div>';
+  }
+}
+
+/* ---------- init ---------- */
+(async function(){
+  const { data } = await sb.auth.getSession();
+  if(data.session) enterApp();
+})();
+</script>
+</body>
+</html>
