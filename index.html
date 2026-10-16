@@ -351,7 +351,8 @@ function renderHist(){
       '<td style="white-space:nowrap">' + fmtRp(r.amount_rp) + '</td>' +
       '<td style="white-space:nowrap">' + fmtDate(r.exp_date) + '</td>' +
       '<td><span class="badge b ' + r.status + '">' + STATUS_LABEL[r.status] + '</span></td>' +
-      '<td><button class="btn ghost sm" onclick="copyCode(\'' + r.code + '\')">Salin</button></td>' +
+      '<td style="white-space:nowrap"><button class="btn ghost sm" onclick="copyCode(\'' + r.code + '\')">Salin</button> ' +
+      '<button class="btn ghost sm" style="color:var(--red)" onclick="delRow(\'' + r.id + '\')">Hapus</button></td>' +
     '</tr>';
   }).join('');
 }
@@ -359,6 +360,14 @@ function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<'
 function copyCode(code){
   const pretty = code.replace(/(.{4})/g, '$1-').replace(/-$/, '');
   if(navigator.clipboard) navigator.clipboard.writeText(pretty);
+}
+async function delRow(id){
+  const r = HIST.find(x => x.id === id);
+  const name = r ? r.buyer_name : '';
+  if(!confirm('Hapus riwayat "' + name + '"?\n\nCatatan: kode yang sudah dikirim ke pelanggan TETAP BERLAKU — yang dihapus hanya catatannya di sini.')) return;
+  const { error } = await sb.rpc('license_delete', { p_id: id });
+  if(error){ alert(rpcErr(error)); return; }
+  loadAll();
 }
 function exportCSV(){
   if(!HIST.length) return;
