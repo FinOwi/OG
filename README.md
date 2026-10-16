@@ -17,7 +17,7 @@ Live di **https://admin.ogkasir.my.id** (GitHub Pages, repo publik ini).
    https://supabase.com/dashboard/project/ypdfdaxgqgkaupsyiauy/sql ,
    paste seluruh isi `supabase-admin.sql`, Run.
 2. **Buat akun admin** — Supabase dashboard → Authentication → Add user →
-   email + password (atau daftar lewat halaman login situs ini).
+   `admin.ogkasir@gmail.com` + password (akun baru hanya bisa dibuat dari dashboard).
 3. **GitHub Pages** — repo Settings → Pages → Deploy from branch → `main` / root.
 4. **DNS** — di IDwebhost tambah CNAME: `admin` → `finowi.github.io`.
 

@@ -34,12 +34,8 @@ button{font-family:inherit;cursor:pointer}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1;min-width:140px}
 .err{background:#3a1414;border:1px solid #7f2d2d;color:#fca5a5;padding:11px 13px;border-radius:11px;font-size:13px;margin-top:12px;display:none}
-.okmsg{background:#0f2e1c;border:1px solid #1d5c37;color:#86efac;padding:11px 13px;border-radius:11px;font-size:13px;margin-top:12px;display:none}
 /* login */
 #loginView{max-width:400px;margin:8vh auto 0}
-.tabs{display:flex;gap:8px;margin-bottom:4px}
-.tabs button{flex:1;background:none;border:0;color:var(--mut);font-weight:700;font-size:14px;padding:10px;border-bottom:2px solid var(--line)}
-.tabs button.on{color:var(--gold2);border-color:var(--gold)}
 /* stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -84,29 +80,13 @@ tr:first-child td{border-top:0}
       <h1>OGKasir Admin<small>Panel penjual — khusus pemilik</small></h1>
     </div>
     <div class="card">
-      <div class="tabs">
-        <button id="tabLogin" class="on" onclick="showTab('login')">Masuk</button>
-        <button id="tabSignup" onclick="showTab('signup')">Daftar</button>
-      </div>
-      <div id="paneLogin">
-        <label>Email</label>
-        <input id="liEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
-        <label>Kata sandi</label>
-        <input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password">
-        <div style="height:14px"></div>
-        <button class="btn" onclick="doLogin()">Masuk</button>
-      </div>
-      <div id="paneSignup" class="hidden">
-        <label>Email</label>
-        <input id="suEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
-        <label>Kata sandi</label>
-        <input id="suPass" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password">
-        <div style="height:14px"></div>
-        <button class="btn" onclick="doSignup()">Buat Akun</button>
-        <p style="font-size:12px;color:var(--mut);line-height:1.6">Akun baru hanya bisa dipakai kalau emailnya sudah didaftarkan sebagai admin.</p>
-      </div>
+      <label>Email</label>
+      <input id="liEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
+      <label>Kata sandi</label>
+      <input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div style="height:14px"></div>
+      <button class="btn" onclick="doLogin()">Masuk</button>
       <div class="err" id="loginErr"></div>
-      <div class="okmsg" id="loginOk"></div>
     </div>
   </div>
 
@@ -249,14 +229,7 @@ function rpcErr(err){
   return 'Gagal: ' + m;
 }
 
-/* ---------- tab login ---------- */
-function showTab(which){
-  $('tabLogin').classList.toggle('on', which==='login');
-  $('tabSignup').classList.toggle('on', which==='signup');
-  $('paneLogin').classList.toggle('hidden', which!=='login');
-  $('paneSignup').classList.toggle('hidden', which!=='signup');
-  hideErr('loginErr'); $('loginOk').style.display='none';
-}
+/* ---------- login ---------- */
 async function doLogin(){
   hideErr('loginErr');
   const { error } = await sb.auth.signInWithPassword({
@@ -264,19 +237,6 @@ async function doLogin(){
   });
   if(error){ showErr('loginErr', 'Gagal masuk: ' + error.message); return; }
   enterApp();
-}
-async function doSignup(){
-  hideErr('loginErr'); $('loginOk').style.display='none';
-  const email = $('suEmail').value.trim(), pass = $('suPass').value;
-  if(pass.length < 6){ showErr('loginErr', 'Kata sandi minimal 6 karakter.'); return; }
-  const { error } = await sb.auth.signUp({ email, password: pass });
-  if(error){ showErr('loginErr', 'Gagal daftar: ' + error.message); return; }
-  const ok = $('loginOk');
-  ok.textContent = 'Akun dibuat. Sekarang masuk lewat tab "Masuk".';
-  ok.style.display = 'block';
-  showTab('login'); $('liEmail').value = email;
-  $('loginOk').style.display='block';
-  $('loginOk').textContent = 'Akun dibuat. Silakan masuk.';
 }
 async function doLogout(){
   await sb.auth.signOut();
