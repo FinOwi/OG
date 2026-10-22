@@ -68,6 +68,7 @@ tr:first-child td{border-top:0}
 .foot{margin-top:26px;color:var(--mut);font-size:12px;text-align:center;line-height:1.7}
 .verify-ok{border:1px solid #1d5c37;background:#0f2e1c;color:#86efac;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
 .verify-bad{border:1px solid #7f2d2d;background:#3a1414;color:#fca5a5;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
+  .cdin { width: 105px; padding: 6px 8px; border: 1.5px solid #E3E7EE; border-radius: 8px; font: inherit; margin: 6px 4px 0 0; }
 </style>
 </head>
 <body>
@@ -106,15 +107,15 @@ tr:first-child td{border-top:0}
     <div class="stats">
       <div class="stat"><div class="n" id="stAktif">–</div><div class="l">Lisensi aktif</div></div>
       <div class="stat"><div class="n" id="stHampir">–</div><div class="l">Habis ≤ 7 hari</div></div>
-      <div class="stat"><div class="n" id="stOmzet">–</div><div class="l">Omzet bulan ini</div></div>
-      <div class="stat"><div class="n" id="stCust">–</div><div class="l">Pelanggan</div></div>
+      <div class="stat"><div class="n" id="stOmzet">–</div><div class="l">Perangkat terdaftar</div></div>
+      <div class="stat"><div class="n" id="stCust">–</div><div class="l">Pengguna terdaftar</div></div>
     </div>
 
     <div class="mtabs">
       <button id="mtUsers" class="on" onclick="showMain('users')">👥 Pengguna</button>
-      <button id="mtGen" onclick="showMain('gen')">⚡ Generator</button>
-      <button id="mtHist" onclick="showMain('hist')">📋 Riwayat</button>
-      <button id="mtVer" onclick="showMain('ver')">🔍 Verifikasi</button>
+      
+      
+      
     </div>
 
     <!-- Pengguna: lisensi per akun -->
@@ -134,83 +135,6 @@ tr:first-child td{border-top:0}
         </tr></thead>
         <tbody id="usersBody"><tr><td colspan="6" style="text-align:center;color:var(--mut)">Memuat…</td></tr></tbody>
       </table></div>
-    </div>
-
-    <!-- Generator -->
-    <div id="paneGen" class="card hidden">
-      <h2 class="sec">Buat kode aktivasi</h2>
-      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Jalur lama (kode per perangkat) — tetap berlaku untuk pelanggan lama. Pelanggan baru cukup daftar akun, beri lisensinya lewat tab 👥 Pengguna. Kode lama juga bisa diklaim pelanggan menjadi lisensi akun dari aplikasi.</p>
-      <label>Kode device pelanggan (dari layar kunci aplikasi)</label>
-      <input id="gDev" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:1px">
-      <div class="row">
-        <div>
-          <label>Nama / usaha pembeli *</label>
-          <input id="gBuyer" placeholder="cth: Warkop Bang Jago">
-        </div>
-        <div>
-          <label>No. WA (opsional)</label>
-          <input id="gWa" placeholder="cth: 0812xxxx" inputmode="tel">
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>Durasi</label>
-          <select id="gPlan" onchange="planChanged()">
-            <option value="30">30 hari — Rp 50rb</option>
-            <option value="90">90 hari — Rp 130rb</option>
-            <option value="365">365 hari — Rp 500rb</option>
-            <option value="99999">♾️ Unlimited (founder)</option>
-          </select>
-        </div>
-        <div>
-          <label>Harga (Rp)</label>
-          <input id="gAmount" type="number" value="50000" min="0" inputmode="numeric">
-        </div>
-      </div>
-      <label>Catatan (opsional)</label>
-      <input id="gNote" placeholder="cth: bayar via QRIS">
-      <div style="height:14px"></div>
-      <button class="btn" onclick="doGenerate()">⚡ Buatkan Kode</button>
-      <div class="err" id="genErr"></div>
-      <div id="genResult" class="hidden">
-        <div class="codeout" id="genCode"></div>
-        <p style="font-size:13px;color:var(--mut);text-align:center" id="genExp"></p>
-        <div class="row">
-          <button class="btn ghost" onclick="copyGen()">📋 Salin Kode</button>
-          <button class="btn ghost hidden" id="waBtn" onclick="sendWA()">💬 Kirim via WA</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Riwayat -->
-    <div id="paneHist" class="card hidden">
-      <h2 class="sec">Riwayat kode aktivasi</h2>
-      <div class="toolbar">
-        <input id="histQ" placeholder="🔎 Cari nama / device / kode…" oninput="renderHist()">
-        <div class="spacer"></div>
-        <button class="btn ghost sm" onclick="exportCSV()">⬇️ Ekspor CSV</button>
-        <button class="btn ghost sm" onclick="loadAll()">🔄 Muat ulang</button>
-      </div>
-      <div class="tblwrap"><table>
-        <thead><tr>
-          <th>Tanggal</th><th>Pembeli</th><th>Device</th><th>Paket</th>
-          <th>Harga</th><th>Kedaluwarsa</th><th>Status</th><th></th>
-        </tr></thead>
-        <tbody id="histBody"><tr><td colspan="8" style="text-align:center;color:var(--mut)">Memuat…</td></tr></tbody>
-      </table></div>
-    </div>
-
-    <!-- Verifikasi -->
-    <div id="paneVer" class="card hidden">
-      <h2 class="sec">Verifikasi kode aktivasi</h2>
-      <label>Kode aktivasi</label>
-      <input id="vCode" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase">
-      <label>Kode device</label>
-      <input id="vDev" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase">
-      <div style="height:14px"></div>
-      <button class="btn" onclick="doVerify()">🔍 Cek Kode</button>
-      <div class="err" id="verErr"></div>
-      <div id="verResult"></div>
     </div>
 
     <p class="foot">OGKasir Admin · FinOwi Id<br>Halaman ini tidak terindeks Google.</p>
@@ -270,143 +194,15 @@ async function enterApp(){
   $('userEmail').textContent = (data.user && data.user.email) || '';
   $('loginView').classList.add('hidden');
   $('appView').classList.remove('hidden');
-  loadAll();
+  loadUsers();
 }
 
 /* ---------- tab utama ---------- */
 function showMain(which){
-  ['users','gen','hist','ver'].forEach(t => {
+  ['users'].forEach(t => {
     $('mt' + t[0].toUpperCase() + t.slice(1)).classList.toggle('on', t===which);
     $('pane' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', t!==which);
   });
-}
-
-/* ---------- generator ---------- */
-$('gDev').addEventListener('input', e => {
-  let v = e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0,8);
-  e.target.value = v.length > 4 ? v.slice(0,4) + '-' + v.slice(4) : v;
-});
-function planChanged(){
-  const p = $('gPlan').value;
-  $('gAmount').value = PRICES[p] != null ? PRICES[p] : 0;
-}
-function normWA(w){
-  let d = String(w||'').replace(/\D/g, '');
-  if(d.startsWith('0')) d = '62' + d.slice(1);
-  return d;
-}
-async function doGenerate(){
-  hideErr('genErr'); $('genResult').classList.add('hidden');
-  const dev = $('gDev').value, buyer = $('gBuyer').value.trim();
-  const plan = parseInt($('gPlan').value, 10);
-  const amount = parseInt($('gAmount').value || '0', 10);
-  const wa = $('gWa').value.trim(), note = $('gNote').value.trim();
-  if(buyer === ''){ showErr('genErr', 'Nama pembeli wajib diisi.'); return; }
-  const { data, error } = await sb.rpc('license_issue', {
-    p_device: dev, p_plan_days: plan, p_buyer: buyer,
-    p_amount: amount, p_wa: wa || null, p_note: note || null
-  });
-  if(error){ showErr('genErr', rpcErr(error)); return; }
-  const row = data[0];
-  $('genCode').textContent = row.code;
-  $('genExp').textContent = 'Berlaku sampai ' + fmtDate(row.exp_date) +
-    (plan === 99999 ? ' (unlimited)' : '');
-  $('genResult').classList.remove('hidden');
-  const waNum = normWA(wa);
-  const wb = $('waBtn');
-  if(waNum){
-    wb.classList.remove('hidden');
-    wb.dataset.wa = waNum; wb.dataset.code = row.code; wb.dataset.exp = fmtDate(row.exp_date);
-  } else wb.classList.add('hidden');
-  try{ await navigator.clipboard.writeText(row.code); }catch(e){}
-  loadAll();
-}
-function copyGen(){
-  const t = $('genCode').textContent;
-  if(navigator.clipboard) navigator.clipboard.writeText(t);
-}
-function sendWA(){
-  const b = $('waBtn');
-  const txt = 'Halo, berikut kode aktivasi OGKasir Anda:\n\n' + b.dataset.code +
-    '\n\nBerlaku sampai ' + b.dataset.exp +
-    '\n\nCara pakai: buka OGKasir → tempel kode di layar kunci → Aktifkan. Terima kasih 🙏';
-  window.open('https://wa.me/' + b.dataset.wa + '?text=' + encodeURIComponent(txt), '_blank');
-}
-
-/* ---------- riwayat ---------- */
-async function loadAll(){
-  const [s, h] = await Promise.all([
-    sb.rpc('license_stats'),
-    sb.rpc('license_list', { p_limit: 200 })
-  ]);
-  if(s.error){ console.warn(s.error); }
-  else {
-    const r = s.data[0] || {};
-    $('stAktif').textContent = r.aktif ?? '–';
-    $('stHampir').textContent = r.mau_habis ?? '–';
-    $('stOmzet').textContent = fmtRp(r.omzet_bulan_ini || 0);
-    $('stCust').textContent = r.total_pelanggan ?? '–';
-  }
-  if(h.error){ console.warn(h.error); HIST = []; }
-  else HIST = h.data || [];
-  renderHist();
-  loadUsers();
-}
-const STATUS_LABEL = {aktif:'Aktif', mau_habis:'Mau habis', kedaluwarsa:'Kedaluwarsa'};
-function renderHist(){
-  const q = $('histQ').value.trim().toLowerCase();
-  const rows = HIST.filter(r => {
-    if(!q) return true;
-    return (r.buyer_name + ' ' + r.device_code + ' ' + r.code).toLowerCase().includes(q);
-  });
-  const tb = $('histBody');
-  if(!rows.length){
-    tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--mut)">Belum ada data.</td></tr>';
-    return;
-  }
-  tb.innerHTML = rows.map(r => {
-    const dev = r.device_code.slice(0,4) + '-' + r.device_code.slice(4);
-    return '<tr>' +
-      '<td style="white-space:nowrap">' + fmtDateTime(r.issued_at) + '</td>' +
-      '<td><b>' + esc(r.buyer_name) + '</b>' + (r.buyer_wa ? '<br><span class="mono" style="color:var(--mut)">' + esc(r.buyer_wa) + '</span>' : '') + '</td>' +
-      '<td class="mono">' + dev + '</td>' +
-      '<td>' + esc(r.plan_label) + '</td>' +
-      '<td style="white-space:nowrap">' + fmtRp(r.amount_rp) + '</td>' +
-      '<td style="white-space:nowrap">' + fmtDate(r.exp_date) + '</td>' +
-      '<td><span class="badge b ' + r.status + '">' + STATUS_LABEL[r.status] + '</span></td>' +
-      '<td style="white-space:nowrap"><button class="btn ghost sm" onclick="copyCode(\'' + r.code + '\')">Salin</button> ' +
-      '<button class="btn ghost sm" style="color:var(--red)" onclick="delRow(\'' + r.id + '\')">Hapus</button></td>' +
-    '</tr>';
-  }).join('');
-}
-function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function copyCode(code){
-  const pretty = code.replace(/(.{4})/g, '$1-').replace(/-$/, '');
-  if(navigator.clipboard) navigator.clipboard.writeText(pretty);
-}
-async function delRow(id){
-  const r = HIST.find(x => x.id === id);
-  const name = r ? r.buyer_name : '';
-  if(!confirm('Hapus riwayat "' + name + '"?\n\nCatatan: kode yang sudah dikirim ke pelanggan TETAP BERLAKU — yang dihapus hanya catatannya di sini.')) return;
-  const { error } = await sb.rpc('license_delete', { p_id: id });
-  if(error){ alert(rpcErr(error)); return; }
-  loadAll();
-}
-function exportCSV(){
-  if(!HIST.length) return;
-  const head = 'Tanggal,Pembeli,WA,Device,Paket,Harga,Berlaku Sampai,Status,Kode\n';
-  const q = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
-  const body = HIST.map(r => [
-    fmtDateTime(r.issued_at), r.buyer_name, r.buyer_wa||'',
-    r.device_code, r.plan_label, r.amount_rp, fmtDate(r.exp_date),
-    STATUS_LABEL[r.status]||r.status, r.code
-  ].map(q).join(',')).join('\n');
-  const blob = new Blob(["\ufeff" + head + body], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'ogkasir-lisensi.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
 }
 
 /* ---------- pengguna & lisensi per akun ---------- */
@@ -416,7 +212,24 @@ async function loadUsers(){
   const { data, error } = await sb.rpc('account_users_admin', { p_limit: 200 });
   if(error){ showErr('usersErr', rpcErr(error)); USERS = []; }
   else USERS = data || [];
+  renderStats();
   renderUsers();
+}
+function renderStats(){
+  const now = Date.now();
+  let aktif = 0, hampir = 0, dev = 0;
+  USERS.forEach(u => {
+    dev += (u.device_count || 0);
+    if(u.lic_status === 'active'){
+      const exp = u.expires_at ? Date.parse(u.expires_at) : null;
+      if(exp === null) aktif++;
+      else if(exp > now){ aktif++; if(exp - now <= 7 * 864e5) hampir++; }
+    }
+  });
+  $('stCust').textContent = USERS.length;
+  $('stAktif').textContent = aktif;
+  $('stHampir').textContent = hampir;
+  $('stOmzet').textContent = dev;
 }
 function licBadge(u){
   const now = Date.now();
@@ -460,6 +273,8 @@ function renderUsers(){
         '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',365,\'1 tahun\')">+1 thn</button> ' +
         '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',-1,\'Unlimited\')">♾️</button> ' +
         '<button class="btn ghost sm" style="color:var(--red)" onclick="grantLic(\'' + em + '\',0,null)">Cabut</button>' +
+        '<br><input type="number" class="cdin" id="cd_' + u.email.replace(/[^a-z0-9]/gi, '_') + '" min="1" max="3650" placeholder="Hari custom">' +
+        '<button class="btn ghost sm" onclick="grantCustom(\'' + em + '\')">+ Tambah</button>' +
       '</td></tr>';
   }).join('');
 }
@@ -483,23 +298,11 @@ async function grantLic(email, days, label){
   if(error){ alert(rpcErr(error)); return; }
   loadUsers();
 }
-
-/* ---------- verifikasi ---------- */
-async function doVerify(){
-  hideErr('verErr'); $('verResult').innerHTML = '';
-  const { data, error } = await sb.rpc('license_verify', {
-    p_code: $('vCode').value, p_device: $('vDev').value
-  });
-  if(error){ showErr('verErr', rpcErr(error)); return; }
-  const r = data[0];
-  const REASONS = {format:'Format kode salah (harus 24 karakter).', device:'Kode ini bukan untuk device tersebut.',
-                   sig:'Tanda tangan tidak cocok — kode palsu/rusak.', expired:'Kode sudah kedaluwarsa.'};
-  if(r.valid){
-    $('verResult').innerHTML = '<div class="verify-ok">✅ <b>Kode VALID.</b><br>Berlaku sampai ' + fmtDate(r.exp_date) + '.</div>';
-  } else {
-    $('verResult').innerHTML = '<div class="verify-bad">❌ <b>Kode TIDAK valid.</b><br>' + (REASONS[r.reason] || r.reason) +
-      (r.exp_date ? '<br>Kedaluwarsa: ' + fmtDate(r.exp_date) : '') + '</div>';
-  }
+function grantCustom(email){
+  const el = $('cd_' + email.replace(/[^a-z0-9]/gi, '_'));
+  const days = parseInt(el && el.value, 10);
+  if(!days || days < 1 || days > 3650){ alert('Isi jumlah hari custom dulu (1–3650).'); return; }
+  grantLic(email, days, days + ' hari (custom)');
 }
 
 /* ---------- init ---------- */
