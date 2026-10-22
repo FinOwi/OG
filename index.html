@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel Admin OGKasir</title>
+<link rel="icon" type="image/png" href="logo-ogkasir.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,7 +26,7 @@ input{font:inherit}
 /* header */
 .topbar{display:flex;align-items:center;gap:13px;margin-bottom:20px}
 .avatar{width:48px;height:48px;border-radius:13px;border:2px solid var(--navy);box-shadow:3px 3px 0 var(--navy);overflow:hidden;background:#fff;flex:none}
-.avatar img{width:100%;height:100%;object-fit:contain;padding:3px;display:block}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .brand{font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--navy)}
 .brand span{color:var(--blue)}
 .top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
@@ -104,7 +105,7 @@ input{font:inherit}
 <!-- LOGIN -->
 <div id="loginView" class="loginwrap">
   <div class="login-card">
-    <div class="avatar"><img src="https://ogkasir.my.id/img/logo-ogkasir.jpg" alt="OGKasir"></div>
+    <div class="avatar"><img src="logo-ogkasir.png" alt="Logo OGKasir"></div>
     <h1>Panel Admin <span>OGKasir</span></h1>
     <p>Masuk dengan akun admin FinOwi Id.</p>
     <div class="err" id="loginErr"></div>
@@ -120,7 +121,7 @@ input{font:inherit}
 <!-- APP -->
 <div id="appView" class="wrap hidden">
   <div class="topbar">
-    <div class="avatar"><img src="https://ogkasir.my.id/img/logo-ogkasir.jpg" alt="OGKasir"></div>
+    <div class="avatar"><img src="logo-ogkasir.png" alt="Logo OGKasir"></div>
     <div class="brand">Panel Admin <span>OGKasir</span></div>
     <div class="top-right">
       <span class="who" id="userEmail"></span>
