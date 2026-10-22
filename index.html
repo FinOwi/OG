@@ -4,141 +4,185 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>OGKasir Admin</title>
+<title>Panel Admin OGKasir</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#131009; --card:#1d1810; --card2:#242015; --line:#3a2f1c;
-  --gold:#e8b34b; --gold2:#f6d47c; --txt:#f4ecda; --mut:#a89878;
-  --green:#4ade80; --amber:#fbbf24; --red:#f87171;
+  --bg:#FBF3E2; --card:#FFFFFF; --navy:#0B2B4B; --blue:#1E88E5;
+  --ink:#12283F; --mut:#71808F; --line:#E7DFCE;
+  --green:#22A06B; --orange:#F59E0B; --red:#E5484D;
+  --shadow:4px 4px 0 var(--navy);
 }
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100vh}
-.wrap{max-width:1060px;margin:0 auto;padding:20px 16px 60px}
-.brand{display:flex;align-items:center;gap:12px;margin:6px 0 20px}
-.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#f6d47c,#c98f2b);display:flex;align-items:center;justify-content:center;font-weight:800;color:#241a08;font-size:19px;box-shadow:0 4px 18px rgba(232,179,75,.35)}
-.brand h1{margin:0;font-size:20px;font-weight:800}
-.brand small{display:block;color:var(--mut);font-weight:500;font-size:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
-h2.sec{font-size:15px;margin:0 0 12px;font-weight:700}
-label{display:block;font-size:12px;color:var(--mut);font-weight:600;margin:12px 0 6px}
-input,select,textarea{width:100%;padding:12px 13px;border-radius:11px;border:1px solid var(--line);background:#14110b;color:var(--txt);font-size:15px;font-family:inherit}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
-button{font-family:inherit;cursor:pointer}
-.btn{border:0;border-radius:12px;padding:13px 18px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#f6d47c,#d99f35);color:#241a08;width:100%}
-.btn:active{transform:scale(.98)}
-.btn.ghost{background:var(--card2);color:var(--gold2);border:1px solid var(--line);width:auto;padding:10px 16px;font-size:14px}
-.btn.sm{width:auto;padding:8px 14px;font-size:13px}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>*{flex:1;min-width:140px}
-.err{background:#3a1414;border:1px solid #7f2d2d;color:#fca5a5;padding:11px 13px;border-radius:11px;font-size:13px;margin-top:12px;display:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:22px 18px 60px}
+.hidden{display:none !important}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+
+/* header */
+.topbar{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.avatar{width:48px;height:48px;border-radius:13px;border:2px solid var(--navy);box-shadow:3px 3px 0 var(--navy);overflow:hidden;background:#fff;flex:none}
+.avatar img{width:100%;height:100%;object-fit:contain;padding:3px;display:block}
+.brand{font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--navy)}
+.brand span{color:var(--blue)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.who{font-size:13.5px;color:var(--mut);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--navy);border:2px solid var(--navy);border-radius:11px;padding:8px 16px;font-weight:700;box-shadow:3px 3px 0 var(--navy);transition:transform .06s, box-shadow .06s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--navy)}
+.btn.navy{background:var(--navy);color:#fff}
+.btn.blue{background:var(--blue);border-color:var(--navy);color:#fff}
+.btn.sm{padding:5px 12px;font-size:13px;border-radius:9px;box-shadow:2px 2px 0 var(--navy)}
+.btn.danger{color:var(--red)}
+
+/* tabs */
+.tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.tab{background:#fff;border:2px solid var(--navy);color:var(--navy);border-radius:999px;padding:9px 22px;font-weight:700;box-shadow:3px 3px 0 var(--navy)}
+.tab.on{background:var(--navy);color:#fff}
+
+/* cards */
+.card{background:var(--card);border:2px solid var(--navy);border-radius:17px;box-shadow:var(--shadow);padding:20px 22px;margin-bottom:20px}
+.card h3{margin:0 0 14px;font-size:16.5px;font-weight:800;color:var(--navy)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:2px solid var(--navy);border-radius:15px;box-shadow:var(--shadow);padding:15px 16px 13px 19px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--sc,var(--navy))}
+.stat .n{font-size:27px;font-weight:800;color:var(--navy);line-height:1.05}
+.stat .l{font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--mut);text-transform:uppercase;margin-top:4px}
+.rowline{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1.5px dashed var(--line)}
+.rowline:last-child{border-bottom:none}
+.rowline .grow{flex:1;min-width:0}
+.rowline .main{font-weight:700;color:var(--ink);word-break:break-all}
+.rowline .sub{font-size:12.5px;color:var(--mut)}
+.rowline .when{font-size:12.5px;color:var(--mut);white-space:nowrap}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.trial{background:#FDEBD2;color:#B45309}
+.pill.aktif{background:#DFF5E3;color:#157347}
+.pill.exp{background:#FDE3E3;color:#B3261E}
+.pill.none{background:#EEF1F4;color:#5B6B7A}
+.dash{border-bottom:1.5px dashed var(--line);padding:9px 0;display:flex;justify-content:space-between;gap:12px}
+.dash:last-child{border-bottom:none}
+.note{font-size:13px;color:var(--mut);margin-top:8px}
+
+/* customer */
+.searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.searchbar input{flex:1;min-width:220px;padding:11px 14px;border:2px solid var(--navy);border-radius:12px;background:#fff;color:var(--ink)}
+.cust{border:2px solid var(--navy);border-radius:15px;box-shadow:var(--shadow);background:#fff;padding:16px 18px;margin-bottom:14px}
+.cust.flash{outline:3px solid var(--blue)}
+.cust-top{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.cust-email{font-weight:800;color:var(--navy);word-break:break-all}
+.cust-meta{font-size:13px;color:var(--mut);margin-top:5px;line-height:1.65}
+.cust-meta b{color:var(--ink)}
+.cust-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;align-items:center}
+.cdin{width:118px;padding:7px 10px;border:2px solid var(--navy);border-radius:9px}
+.err{display:none;background:#FDECEC;border:2px solid var(--red);color:#8F1D22;border-radius:12px;padding:11px 14px;font-size:14px;margin-bottom:14px}
+.empty{color:var(--mut);text-align:center;padding:18px 0}
+.act-ic{width:38px;height:38px;flex:none;border:2px solid var(--navy);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;background:#FFF7E8}
+
 /* login */
-#loginView{max-width:400px;margin:8vh auto 0}
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.stat .n{font-size:26px;font-weight:800;color:var(--gold2)}
-.stat .l{font-size:12px;color:var(--mut);margin-top:2px}
-/* main tabs */
-.mtabs{display:flex;gap:8px;margin:0 0 14px;overflow-x:auto}
-.mtabs button{background:var(--card);border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:14px;padding:10px 18px;border-radius:999px;white-space:nowrap}
-.mtabs button.on{background:linear-gradient(135deg,#f6d47c,#d99f35);color:#241a08;border-color:transparent}
-/* result code */
-.codeout{font-size:19px;font-weight:800;letter-spacing:1px;background:#14110b;border:1px dashed var(--gold);border-radius:12px;padding:16px;text-align:center;margin-top:14px;line-height:1.8;color:var(--gold2);word-break:break-all}
-/* table */
-.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
-th{background:var(--card2);color:var(--mut);text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:top}
-tr:first-child td{border-top:0}
-.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
-.b.aktif{background:rgba(74,222,128,.14);color:var(--green)}
-.b.mau_habis{background:rgba(251,191,36,.14);color:var(--amber)}
-.b.kedaluwarsa{background:rgba(248,113,113,.14);color:var(--red)}
-.mono{font-family:ui-monospace,monospace;font-size:12px}
-.toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.toolbar input{max-width:280px}
-.spacer{flex:1}
-.headbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.userchip{font-size:13px;color:var(--mut)}
-.hidden{display:none!important}
-.foot{margin-top:26px;color:var(--mut);font-size:12px;text-align:center;line-height:1.7}
-.verify-ok{border:1px solid #1d5c37;background:#0f2e1c;color:#86efac;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
-.verify-bad{border:1px solid #7f2d2d;background:#3a1414;color:#fca5a5;border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
-  .cdin { width: 105px; padding: 6px 8px; border: 1.5px solid #E3E7EE; border-radius: 8px; font: inherit; margin: 6px 4px 0 0; }
+.loginwrap{max-width:430px;margin:9vh auto 0;padding:0 18px}
+.login-card{background:#fff;border:2px solid var(--navy);border-radius:18px;box-shadow:var(--shadow);padding:28px}
+.login-card h1{font-size:21px;margin:12px 0 4px;color:var(--navy)}
+.login-card h1 span{color:var(--blue)}
+.login-card p{color:var(--mut);font-size:14px;margin:0 0 18px}
+.login-card label{display:block;font-size:13px;font-weight:700;margin:13px 0 6px;color:var(--navy)}
+.login-card input{width:100%;padding:11px 13px;border:2px solid var(--navy);border-radius:11px}
+.login-card .btn{width:100%;justify-content:center;margin-top:18px;padding:12px}
+.foot{text-align:center;color:var(--mut);font-size:12.5px;margin-top:26px}
+
+@media (max-width:920px){ .stats{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){
+  .brand{font-size:19px} .who{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .card{padding:17px 16px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- ============ LOGIN ============ -->
-  <div id="loginView">
-    <div class="brand" style="justify-content:center">
-      <div class="mark">OG</div>
-      <h1>OGKasir Admin<small>Panel penjual — khusus pemilik</small></h1>
-    </div>
-    <div class="card">
-      <label>Email</label>
-      <input id="liEmail" type="email" placeholder="admin.ogkasir@gmail.com" autocomplete="email">
-      <label>Kata sandi</label>
-      <input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password">
-      <div style="height:14px"></div>
-      <button class="btn" onclick="doLogin()">Masuk</button>
-      <div class="err" id="loginErr"></div>
+<!-- LOGIN -->
+<div id="loginView" class="loginwrap">
+  <div class="login-card">
+    <div class="avatar"><img src="https://ogkasir.my.id/img/logo-ogkasir.jpg" alt="OGKasir"></div>
+    <h1>Panel Admin <span>OGKasir</span></h1>
+    <p>Masuk dengan akun admin FinOwi Id.</p>
+    <div class="err" id="loginErr"></div>
+    <label for="liEmail">Email admin</label>
+    <input id="liEmail" type="email" autocomplete="username" placeholder="admin.ogkasir@gmail.com">
+    <label for="liPass">Password</label>
+    <input id="liPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="btn navy" onclick="doLogin()">Masuk</button>
+  </div>
+  <p class="foot">OGKasir Admin · FinOwi Id<br>Halaman ini tidak terindeks Google.</p>
+</div>
+
+<!-- APP -->
+<div id="appView" class="wrap hidden">
+  <div class="topbar">
+    <div class="avatar"><img src="https://ogkasir.my.id/img/logo-ogkasir.jpg" alt="OGKasir"></div>
+    <div class="brand">Panel Admin <span>OGKasir</span></div>
+    <div class="top-right">
+      <span class="who" id="userEmail"></span>
+      <button class="btn" onclick="doLogout()">Keluar</button>
     </div>
   </div>
 
-  <!-- ============ APP ============ -->
-  <div id="appView" class="hidden">
-    <div class="headbar">
-      <div class="brand" style="margin:0">
-        <div class="mark">OG</div>
-        <h1>OGKasir Admin<small>Panel penjual</small></h1>
-      </div>
-      <div class="row" style="flex:0;align-items:center">
-        <span class="userchip" id="userEmail"></span>
-        <button class="btn ghost sm" onclick="doLogout()">Keluar</button>
-      </div>
-    </div>
+  <div class="tabs">
+    <button class="tab on" id="mtDash" onclick="showMain('dash')">Dashboard</button>
+    <button class="tab" id="mtCust" onclick="showMain('cust')">Customer</button>
+    <button class="tab" id="mtAct" onclick="showMain('act')">Aktivitas</button>
+  </div>
 
+  <!-- DASHBOARD -->
+  <div id="paneDash">
     <div class="stats">
-      <div class="stat"><div class="n" id="stAktif">–</div><div class="l">Lisensi aktif</div></div>
-      <div class="stat"><div class="n" id="stHampir">–</div><div class="l">Habis ≤ 7 hari</div></div>
-      <div class="stat"><div class="n" id="stOmzet">–</div><div class="l">Perangkat terdaftar</div></div>
-      <div class="stat"><div class="n" id="stCust">–</div><div class="l">Pengguna terdaftar</div></div>
+      <div class="stat" style="--sc:#0B2B4B"><div class="n" id="stTotal">–</div><div class="l">Total Customer</div></div>
+      <div class="stat" style="--sc:#22A06B"><div class="n" id="stAktif">–</div><div class="l">Langganan Aktif</div></div>
+      <div class="stat" style="--sc:#F59E0B"><div class="n" id="stTrial">–</div><div class="l">Trial</div></div>
+      <div class="stat" style="--sc:#E5484D"><div class="n" id="stExp">–</div><div class="l">Kedaluwarsa</div></div>
+      <div class="stat" style="--sc:#1E88E5"><div class="n" id="stBaru">–</div><div class="l">Baru Minggu Ini</div></div>
     </div>
 
-    <div class="mtabs">
-      <button id="mtUsers" class="on" onclick="showMain('users')">👥 Pengguna</button>
-      
-      
-      
+    <div class="card">
+      <h3>Estimasi Pendapatan / bulan</h3>
+      <div id="estBody"><p class="empty">Memuat…</p></div>
+      <p class="note">Dihitung dari langganan berbayar yang masih aktif (harga paket: 30 hari Rp49rb · 90 hari Rp129rb · 1 tahun Rp499rb).</p>
     </div>
 
-    <!-- Pengguna: lisensi per akun -->
-    <div id="paneUsers" class="card">
-      <h2 class="sec">Lisensi per Pengguna (Akun)</h2>
-      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Semua yang sudah daftar akun OGKasir tampil di sini. Tambahkan durasi lisensi dari daftar ini — lisensi mengikuti akun (maks 3 perangkat), bukan kode device lagi.</p>
-      <div class="toolbar">
-        <input id="usersQ" placeholder="🔎 Cari email / nama / toko…" oninput="renderUsers()">
-        <div class="spacer"></div>
-        <button class="btn ghost sm" onclick="loadUsers()">🔄 Muat ulang</button>
-      </div>
-      <div class="err" id="usersErr"></div>
-      <div class="tblwrap"><table>
-        <thead><tr>
-          <th>Pengguna</th><th>WhatsApp</th><th>Terdaftar</th>
-          <th>Lisensi</th><th>Perangkat</th><th>Tambah Durasi</th>
-        </tr></thead>
-        <tbody id="usersBody"><tr><td colspan="6" style="text-align:center;color:var(--mut)">Memuat…</td></tr></tbody>
-      </table></div>
+    <div class="card">
+      <h3>Segera habis ≤ 7 hari</h3>
+      <div id="expList"><p class="empty">Memuat…</p></div>
     </div>
 
-    <p class="foot">OGKasir Admin · FinOwi Id<br>Halaman ini tidak terindeks Google.</p>
+    <div class="card">
+      <h3>Customer terbaru</h3>
+      <div id="newList"><p class="empty">Memuat…</p></div>
+    </div>
   </div>
+
+  <!-- CUSTOMER -->
+  <div id="paneCust" class="hidden">
+    <div class="err" id="custErr"></div>
+    <div class="searchbar">
+      <input id="custQ" placeholder="🔎 Cari email / nama / toko…" oninput="renderCustomers()">
+      <button class="btn" onclick="loadUsers(true)">🔄 Muat ulang</button>
+    </div>
+    <p class="note" id="custCount" style="margin:0 0 12px"></p>
+    <div id="custList"><p class="empty">Memuat…</p></div>
+  </div>
+
+  <!-- AKTIVITAS -->
+  <div id="paneAct" class="hidden">
+    <div class="err" id="actErr"></div>
+    <div class="card">
+      <h3>Aktivitas terbaru</h3>
+      <div id="actList"><p class="empty">Memuat…</p></div>
+      <button class="btn sm" style="margin-top:12px" onclick="loadActivity(true)">🔄 Muat ulang</button>
+    </div>
+  </div>
+
+  <p class="foot">OGKasir Admin · FinOwi Id — lisensi diberikan per akun; tidak ada lagi kode aktivasi.</p>
 </div>
 <script>
 const SUPABASE_URL = 'https://ypdfdaxgqgkaupsyiauy.supabase.co';
@@ -146,169 +190,266 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const $ = id => document.getElementById(id);
-const PRICES = {30:50000, 90:130000, 365:500000, 99999:0};
-let HIST = [];
-
-const fmtRp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtRp = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
 const fmtDate = iso => {
-  if(!iso) return '–';
-  const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso);
-  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+  if (!iso) return '–';
+  const d = new Date(iso);
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 const fmtDateTime = iso => {
-  if(!iso) return '–';
+  if (!iso) return '–';
   const d = new Date(iso);
-  return d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}) + ' ' +
-         d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+  return fmtDate(iso) + ' ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 };
-function showErr(id, msg){
-  const e = $(id); e.textContent = msg; e.style.display = 'block';
+function relTime(iso) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 90) return 'baru saja';
+  if (s < 3600) return Math.floor(s / 60) + ' menit lalu';
+  if (s < 86400) return Math.floor(s / 3600) + ' jam lalu';
+  if (s < 86400 * 30) return Math.floor(s / 86400) + ' hari lalu';
+  return fmtDate(iso);
 }
-function hideErr(id){ $(id).style.display = 'none'; }
-function rpcErr(err){
+function showErr(id, msg) { const e = $(id); e.textContent = msg; e.style.display = 'block'; }
+function hideErr(id) { $(id).style.display = 'none'; }
+function rpcErr(err) {
   const m = String((err && err.message) || err || '');
-  if(m.includes('forbidden')) return 'Email ini belum terdaftar sebagai admin.';
-  if(m.includes('bad_device')) return 'Kode device tidak valid (8 karakter A-Z/2-9).';
-  if(m.includes('bad_plan')) return 'Durasi tidak valid.';
-  if(m.includes('bad_buyer')) return 'Nama pembeli wajib diisi.';
-  if(m.includes('user_not_found')) return 'Pengguna tidak ditemukan (email belum terdaftar).';
+  if (m.includes('forbidden')) return 'Email ini belum terdaftar sebagai admin. Keluar lalu masuk dengan email admin (admin.ogkasir@gmail.com).';
+  if (m.includes('user_not_found')) return 'Pengguna tidak ditemukan (email belum terdaftar).';
+  if (/jwt|token/i.test(m)) return 'Sesi kedaluwarsa — keluar lalu masuk lagi.';
   return 'Gagal: ' + m;
 }
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout ' + (label || '') + ' — koneksi lambat atau sesi kedaluwarsa. Keluar lalu masuk lagi.')), ms))
+  ]);
+}
+
+let USERS = [];
+let ACTS = [];
 
 /* ---------- login ---------- */
-async function doLogin(){
+async function doLogin() {
   hideErr('loginErr');
   const { error } = await sb.auth.signInWithPassword({
     email: $('liEmail').value.trim(), password: $('liPass').value
   });
-  if(error){ showErr('loginErr', 'Gagal masuk: ' + error.message); return; }
+  if (error) { showErr('loginErr', 'Gagal masuk: ' + error.message); return; }
   enterApp();
 }
-async function doLogout(){
-  await sb.auth.signOut();
-  $('appView').classList.add('hidden');
-  $('loginView').classList.remove('hidden');
+async function doLogout() {
+  try { await sb.auth.signOut(); } catch (e) {}
+  localStorage.clear();
+  location.reload();
 }
-async function enterApp(){
-  const { data } = await sb.auth.getUser();
-  $('userEmail').textContent = (data.user && data.user.email) || '';
+async function enterApp() {
   $('loginView').classList.add('hidden');
   $('appView').classList.remove('hidden');
-  loadUsers();
+  try {
+    const r = await withTimeout(sb.auth.getUser(), 6000, 'getUser');
+    $('userEmail').textContent = (r.data && r.data.user && r.data.user.email) || '';
+  } catch (e) { /* abaikan — muat data tetap dicoba; RPC akan melaporkan bila sesi mati */ }
+  loadUsers(false);
+  loadActivity(false);
 }
 
-/* ---------- tab utama ---------- */
-function showMain(which){
-  ['users'].forEach(t => {
-    $('mt' + t[0].toUpperCase() + t.slice(1)).classList.toggle('on', t===which);
-    $('pane' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', t!==which);
+/* ---------- tab ---------- */
+function showMain(which) {
+  ['dash', 'cust', 'act'].forEach(t => {
+    $('mt' + t[0].toUpperCase() + t.slice(1)).classList.toggle('on', t === which);
+    $('pane' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', t !== which);
   });
+}
+function gotoCustomer(email) {
+  showMain('cust');
+  $('custQ').value = email;
+  renderCustomers();
+  const el = document.querySelector('.cust[data-email="' + CSS.escape(email) + '"]');
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2200); }
 }
 
-/* ---------- pengguna & lisensi per akun ---------- */
-let USERS = [];
-async function loadUsers(){
-  hideErr('usersErr');
-  const { data, error } = await sb.rpc('account_users_admin', { p_limit: 200 });
-  if(error){ showErr('usersErr', rpcErr(error)); USERS = []; }
-  else USERS = data || [];
-  renderStats();
-  renderUsers();
+/* ---------- data pengguna ---------- */
+async function loadUsers(manual) {
+  hideErr('custErr');
+  try {
+    const r = await withTimeout(sb.rpc('account_users_admin', { p_limit: 300 }), 20000, 'daftar customer');
+    if (r.error) throw r.error;
+    USERS = r.data || [];
+  } catch (e) {
+    USERS = [];
+    showErr('custErr', rpcErr(e));
+    $('custList').innerHTML = '<p class="empty">Gagal memuat daftar customer.</p>';
+  }
+  renderStats(); renderDash(); renderCustomers();
 }
-function renderStats(){
-  const now = Date.now();
-  let aktif = 0, hampir = 0, dev = 0;
-  USERS.forEach(u => {
-    dev += (u.device_count || 0);
-    if(u.lic_status === 'active'){
-      const exp = u.expires_at ? Date.parse(u.expires_at) : null;
-      if(exp === null) aktif++;
-      else if(exp > now){ aktif++; if(exp - now <= 7 * 864e5) hampir++; }
-    }
-  });
-  $('stCust').textContent = USERS.length;
-  $('stAktif').textContent = aktif;
-  $('stHampir').textContent = hampir;
-  $('stOmzet').textContent = dev;
-}
-function licBadge(u){
+function licState(u) {
   const now = Date.now();
   const exp = u.expires_at ? Date.parse(u.expires_at) : null;
-  if(u.lic_status === 'active' && exp === null)
-    return '<span class="badge b aktif">Aktif ♾️</span>';
-  if(u.lic_status === 'active' && exp !== null && exp >= now)
-    return '<span class="badge b aktif">Aktif</span><br><span style="color:var(--mut);font-size:12px">s/d ' + fmtDate(u.expires_at) + (u.plan_label ? ' · ' + esc(u.plan_label) : '') + '</span>';
-  if(u.lic_status === 'trial')
-    return '<span class="badge b mau_habis">Trial</span>' + (exp ? '<br><span style="color:var(--mut);font-size:12px">s/d ' + fmtDate(u.expires_at) + '</span>' : '');
-  if(u.lic_status === 'suspended')
-    return '<span class="badge b kedaluwarsa">Ditangguhkan</span>';
-  if(u.lic_status === 'active' || u.lic_status === 'expired')
-    return '<span class="badge b kedaluwarsa">Kedaluwarsa</span>' + (exp ? '<br><span style="color:var(--mut);font-size:12px">' + fmtDate(u.expires_at) + '</span>' : '');
-  return '<span class="badge b">Belum ada</span>';
+  if (u.lic_status === 'active' && (exp === null || exp >= now)) return { k: 'aktif', label: exp === null ? 'Aktif ♾️' : 'Aktif', exp };
+  if (u.lic_status === 'trial') return { k: 'trial', label: 'Trial', exp };
+  if (u.lic_status === 'suspended') return { k: 'exp', label: 'Ditangguhkan', exp };
+  if (u.lic_status === 'active' || u.lic_status === 'expired') return { k: 'exp', label: 'Kedaluwarsa', exp };
+  return { k: 'none', label: 'Belum ada', exp };
 }
-function renderUsers(){
-  const q = ($('usersQ').value || '').trim().toLowerCase();
-  const rows = USERS.filter(u => {
-    if(!q) return true;
-    return ((u.email||'') + ' ' + (u.display_name||'') + ' ' + (u.shop_name||'')).toLowerCase().includes(q);
+function renderStats() {
+  const now = Date.now();
+  let aktif = 0, trial = 0, exp = 0, baru = 0;
+  USERS.forEach(u => {
+    const st = licState(u).k;
+    if (st === 'aktif') aktif++;
+    if (st === 'trial') trial++;
+    if (st === 'exp') exp++;
+    if (u.user_created_at && now - Date.parse(u.user_created_at) <= 7 * 864e5) baru++;
   });
-  const tb = $('usersBody');
-  if(!rows.length){
-    tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--mut)">Belum ada pengguna terdaftar.</td></tr>';
+  $('stTotal').textContent = USERS.length;
+  $('stAktif').textContent = aktif;
+  $('stTrial').textContent = trial;
+  $('stExp').textContent = exp;
+  $('stBaru').textContent = baru;
+}
+function priceMonthly(u) {
+  // estimasi pendapatan bulanan dari satu langganan aktif
+  if (!u.expires_at) return Math.round(499000 / 12); // unlimited ~ paket tahunan
+  const label = String(u.plan_label || '');
+  let days = null;
+  const m = label.match(/(\d+)\s*hari/);
+  if (/1 tahun|365/.test(label)) days = 365;
+  else if (/90/.test(label)) days = 90;
+  else if (m) days = parseInt(m[1], 10);
+  else days = 30;
+  const total = days >= 365 ? 499000 : days >= 90 ? 129000 * (days / 90) : 49000 * (days / 30);
+  return Math.round(total / (days / 30));
+}
+function renderDash() {
+  // estimasi pendapatan
+  const act = USERS.filter(u => licState(u).k === 'aktif');
+  let total = 0;
+  const groups = {};
+  act.forEach(u => { const v = priceMonthly(u); total += v; const k = u.plan_label || 'Paket'; groups[k] = (groups[k] || 0) + 1; });
+  if (!act.length) {
+    $('estBody').innerHTML = '<div class="dash"><span>Total</span><b>Rp0</b></div>' +
+      '<p class="note">Belum ada langganan berbayar aktif.</p>';
+  } else {
+    let h = Object.keys(groups).map(k =>
+      '<div class="dash"><span>' + esc(k) + ' × ' + groups[k] + ' customer</span><span>' +
+      fmtRp(act.filter(u => (u.plan_label || 'Paket') === k).reduce((s, u) => s + priceMonthly(u), 0)) + '</span></div>').join('');
+    h += '<div class="dash"><span><b>Total</b></span><b>' + fmtRp(total) + '</b></div>';
+    $('estBody').innerHTML = h;
+  }
+  // segera habis ≤ 7 hari
+  const now = Date.now();
+  const soon = USERS.filter(u => {
+    const st = licState(u);
+    return (st.k === 'aktif' || st.k === 'trial') && st.exp !== null && st.exp > now && st.exp - now <= 7 * 864e5;
+  }).sort((a, b) => Date.parse(a.expires_at) - Date.parse(b.expires_at));
+  $('expList').innerHTML = soon.length ? soon.map(u => {
+    const st = licState(u);
+    const sisa = Math.max(1, Math.ceil((st.exp - now) / 864e5));
+    return '<div class="rowline"><div class="grow"><div class="main">' + esc(u.email) + '</div>' +
+      (u.shop_name ? '<div class="sub">🏪 ' + esc(u.shop_name) + '</div>' : '') + '</div>' +
+      '<span class="pill ' + st.k + '">' + st.label + '</span><b>' + sisa + ' hari</b>' +
+      '<button class="btn sm" onclick="gotoCustomer(\'' + esc(u.email) + '\')">Kelola</button></div>';
+  }).join('') : '<p class="empty">Tidak ada lisensi yang habis dalam 7 hari ke depan. 🎉</p>';
+  // customer terbaru
+  const newest = [...USERS].sort((a, b) => Date.parse(b.user_created_at || 0) - Date.parse(a.user_created_at || 0)).slice(0, 5);
+  $('newList').innerHTML = newest.length ? newest.map(u => {
+    const st = licState(u);
+    return '<div class="rowline"><div class="grow"><div class="main">' +
+      (u.display_name ? esc(u.display_name) + ' ' : '') + '<span style="color:var(--mut);font-weight:600">' + esc(u.email) + '</span></div>' +
+      (u.shop_name ? '<div class="sub">🏪 ' + esc(u.shop_name) + (u.shop_type ? ' · ' + esc(u.shop_type) : '') + '</div>' : '') + '</div>' +
+      '<span class="pill ' + st.k + '">' + st.label + '</span>' +
+      '<span class="when">' + fmtDate(u.user_created_at) + '</span></div>';
+  }).join('') : '<p class="empty">Belum ada customer terdaftar.</p>';
+}
+function renderCustomers() {
+  const q = ($('custQ').value || '').trim().toLowerCase();
+  const rows = USERS.filter(u => !q ||
+    ((u.email || '') + ' ' + (u.display_name || '') + ' ' + (u.shop_name || '')).toLowerCase().includes(q));
+  $('custCount').textContent = rows.length + ' customer' + (q ? ' untuk "' + q + '"' : '');
+  if (!rows.length) {
+    $('custList').innerHTML = '<p class="empty">' + (USERS.length ? 'Tidak ada yang cocok dengan pencarian.' : 'Belum ada customer terdaftar.') + '</p>';
     return;
   }
-  tb.innerHTML = rows.map(u => {
+  $('custList').innerHTML = rows.map(u => {
+    const st = licState(u);
     const em = esc(u.email);
-    return '<tr>' +
-      '<td><b>' + em + '</b>' +
-        (u.display_name ? '<br><span style="color:var(--mut)">' + esc(u.display_name) + '</span>' : '') +
-        (u.shop_name ? '<br><span style="color:var(--mut)">🏪 ' + esc(u.shop_name) + (u.shop_type ? ' · ' + esc(u.shop_type) : '') + '</span>' : '') + '</td>' +
-      '<td class="mono">' + (u.phone ? esc(u.phone) : '–') + '</td>' +
-      '<td style="white-space:nowrap">' + fmtDate(u.user_created_at) + '</td>' +
-      '<td>' + licBadge(u) + '</td>' +
-      '<td style="white-space:nowrap">' + (u.device_count || 0) + ' / ' + (u.max_devices || 3) + '</td>' +
-      '<td style="white-space:nowrap">' +
-        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',30,\'30 hari\')">+30 hari</button> ' +
-        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',90,\'90 hari\')">+90</button> ' +
-        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',365,\'1 tahun\')">+1 thn</button> ' +
-        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',-1,\'Unlimited\')">♾️</button> ' +
-        '<button class="btn ghost sm" style="color:var(--red)" onclick="grantLic(\'' + em + '\',0,null)">Cabut</button>' +
-        '<br><input type="number" class="cdin" id="cd_' + u.email.replace(/[^a-z0-9]/gi, '_') + '" min="1" max="3650" placeholder="Hari custom">' +
-        '<button class="btn ghost sm" onclick="grantCustom(\'' + em + '\')">+ Tambah</button>' +
-      '</td></tr>';
+    const cid = 'cd_' + u.email.replace(/[^a-z0-9]/gi, '_');
+    return '<div class="cust" data-email="' + em + '">' +
+      '<div class="cust-top"><div class="grow" style="flex:1;min-width:200px"><span class="cust-email">' + em + '</span>' +
+      '<div class="cust-meta">' +
+      (u.display_name ? '👤 <b>' + esc(u.display_name) + '</b><br>' : '') +
+      (u.shop_name ? '🏪 <b>' + esc(u.shop_name) + '</b>' + (u.shop_type ? ' · ' + esc(u.shop_type) : '') + '<br>' : '') +
+      (u.phone ? '📱 ' + esc(u.phone) + '<br>' : '') +
+      'Terdaftar ' + fmtDate(u.user_created_at) + ' · Perangkat ' + (u.device_count || 0) + ' / ' + (u.max_devices || 3) +
+      '</div></div>' +
+      '<span class="pill ' + st.k + '">' + st.label + '</span></div>' +
+      (st.exp ? '<div class="cust-meta">Berlaku s/d <b>' + fmtDate(u.expires_at) + '</b>' + (u.plan_label ? ' · ' + esc(u.plan_label) : '') + '</div>' : '') +
+      '<div class="cust-actions">' +
+      '<button class="btn sm" onclick="grantLic(\'' + em + '\',30)">+30 hari</button>' +
+      '<button class="btn sm" onclick="grantLic(\'' + em + '\',90)">+90</button>' +
+      '<button class="btn sm" onclick="grantLic(\'' + em + '\',365)">+1 thn</button>' +
+      '<button class="btn sm blue" onclick="grantLic(\'' + em + '\',-1)">♾️ Unlimited</button>' +
+      '<button class="btn sm danger" onclick="grantLic(\'' + em + '\',0)">Cabut</button>' +
+      '<input type="number" class="cdin" id="' + cid + '" min="1" max="3650" placeholder="Hari custom">' +
+      '<button class="btn sm" onclick="grantCustom(\'' + em + '\')">+ Tambah</button>' +
+      '</div></div>';
   }).join('');
 }
-async function grantLic(email, days, label){
+async function grantLic(email, days) {
   const u = USERS.find(x => x.email === email);
   let msg;
-  if(days > 0){
+  if (days > 0) {
     const base = u && u.expires_at && Date.parse(u.expires_at) > Date.now() ? Date.parse(u.expires_at) : Date.now();
     const baru = new Date(base + days * 86400000);
     msg = 'Tambah ' + days + ' hari lisensi untuk ' + email + '?\nBerlaku sampai: ' +
-      baru.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
-  } else if(days === -1){
+      baru.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  } else if (days === -1) {
     msg = 'Jadikan lisensi ' + email + ' UNLIMITED (tanpa kedaluwarsa)?';
   } else {
     msg = 'CABUT lisensi ' + email + '? Akun kembali ke status belum berlisensi.';
   }
-  if(!confirm(msg)) return;
-  const { error } = await sb.rpc('account_license_grant', {
-    p_email: email, p_days: days, p_plan_label: label
-  });
-  if(error){ alert(rpcErr(error)); return; }
-  loadUsers();
+  if (!confirm(msg)) return;
+  const label = days === -1 ? 'Unlimited' : days === 0 ? null : days + ' hari';
+  try {
+    const r = await withTimeout(sb.rpc('account_license_grant', { p_email: email, p_days: days, p_plan_label: label }), 20000, 'grant');
+    if (r.error) throw r.error;
+  } catch (e) { alert(rpcErr(e)); return; }
+  loadUsers(false); loadActivity(false);
 }
-function grantCustom(email){
+function grantCustom(email) {
   const el = $('cd_' + email.replace(/[^a-z0-9]/gi, '_'));
   const days = parseInt(el && el.value, 10);
-  if(!days || days < 1 || days > 3650){ alert('Isi jumlah hari custom dulu (1–3650).'); return; }
-  grantLic(email, days, days + ' hari (custom)');
+  if (!days || days < 1 || days > 3650) { alert('Isi jumlah hari custom dulu (1–3650).'); return; }
+  grantLic(email, days);
+}
+
+/* ---------- aktivitas ---------- */
+async function loadActivity(manual) {
+  hideErr('actErr');
+  try {
+    const r = await withTimeout(sb.rpc('account_activity_admin', { p_limit: 60 }), 20000, 'aktivitas');
+    if (r.error) throw r.error;
+    ACTS = r.data || [];
+  } catch (e) {
+    ACTS = [];
+    showErr('actErr', rpcErr(e));
+  }
+  const icons = { daftar: '👤', perangkat: '📱', lisensi: '🔑' };
+  $('actList').innerHTML = ACTS.length ? ACTS.map(a =>
+    '<div class="rowline"><div class="act-ic">' + (icons[a.kind] || '•') + '</div>' +
+    '<div class="grow"><div class="main">' + esc(a.email) + '</div>' +
+    '<div class="sub">' + esc(a.detail || '') + '</div></div>' +
+    '<span class="when">' + relTime(a.at) + '<br>' + fmtDateTime(a.at) + '</span></div>'
+  ).join('') : '<p class="empty">Belum ada aktivitas tercatat.</p>';
 }
 
 /* ---------- init ---------- */
-(async function(){
-  const { data } = await sb.auth.getSession();
-  if(data.session) enterApp();
+(async function init() {
+  try {
+    const { data } = await withTimeout(sb.auth.getSession(), 8000, 'sesi');
+    if (data && data.session) enterApp();
+  } catch (e) { /* tampilkan login */ }
 })();
 </script>
 </body>
