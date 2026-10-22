@@ -111,14 +111,35 @@ tr:first-child td{border-top:0}
     </div>
 
     <div class="mtabs">
-      <button id="mtGen" class="on" onclick="showMain('gen')">⚡ Generator</button>
+      <button id="mtUsers" class="on" onclick="showMain('users')">👥 Pengguna</button>
+      <button id="mtGen" onclick="showMain('gen')">⚡ Generator</button>
       <button id="mtHist" onclick="showMain('hist')">📋 Riwayat</button>
       <button id="mtVer" onclick="showMain('ver')">🔍 Verifikasi</button>
     </div>
 
+    <!-- Pengguna: lisensi per akun -->
+    <div id="paneUsers" class="card">
+      <h2 class="sec">Lisensi per Pengguna (Akun)</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Semua yang sudah daftar akun OGKasir tampil di sini. Tambahkan durasi lisensi dari daftar ini — lisensi mengikuti akun (maks 3 perangkat), bukan kode device lagi.</p>
+      <div class="toolbar">
+        <input id="usersQ" placeholder="🔎 Cari email / nama / toko…" oninput="renderUsers()">
+        <div class="spacer"></div>
+        <button class="btn ghost sm" onclick="loadUsers()">🔄 Muat ulang</button>
+      </div>
+      <div class="err" id="usersErr"></div>
+      <div class="tblwrap"><table>
+        <thead><tr>
+          <th>Pengguna</th><th>WhatsApp</th><th>Terdaftar</th>
+          <th>Lisensi</th><th>Perangkat</th><th>Tambah Durasi</th>
+        </tr></thead>
+        <tbody id="usersBody"><tr><td colspan="6" style="text-align:center;color:var(--mut)">Memuat…</td></tr></tbody>
+      </table></div>
+    </div>
+
     <!-- Generator -->
-    <div id="paneGen" class="card">
+    <div id="paneGen" class="card hidden">
       <h2 class="sec">Buat kode aktivasi</h2>
+      <p style="font-size:13px;color:var(--mut);margin:0 0 12px">Jalur lama (kode per perangkat) — tetap berlaku untuk pelanggan lama. Pelanggan baru cukup daftar akun, beri lisensinya lewat tab 👥 Pengguna. Kode lama juga bisa diklaim pelanggan menjadi lisensi akun dari aplikasi.</p>
       <label>Kode device pelanggan (dari layar kunci aplikasi)</label>
       <input id="gDev" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:1px">
       <div class="row">
@@ -226,6 +247,7 @@ function rpcErr(err){
   if(m.includes('bad_device')) return 'Kode device tidak valid (8 karakter A-Z/2-9).';
   if(m.includes('bad_plan')) return 'Durasi tidak valid.';
   if(m.includes('bad_buyer')) return 'Nama pembeli wajib diisi.';
+  if(m.includes('user_not_found')) return 'Pengguna tidak ditemukan (email belum terdaftar).';
   return 'Gagal: ' + m;
 }
 
@@ -253,7 +275,7 @@ async function enterApp(){
 
 /* ---------- tab utama ---------- */
 function showMain(which){
-  ['gen','hist','ver'].forEach(t => {
+  ['users','gen','hist','ver'].forEach(t => {
     $('mt' + t[0].toUpperCase() + t.slice(1)).classList.toggle('on', t===which);
     $('pane' + t[0].toUpperCase() + t.slice(1)).classList.toggle('hidden', t!==which);
   });
@@ -328,6 +350,7 @@ async function loadAll(){
   if(h.error){ console.warn(h.error); HIST = []; }
   else HIST = h.data || [];
   renderHist();
+  loadUsers();
 }
 const STATUS_LABEL = {aktif:'Aktif', mau_habis:'Mau habis', kedaluwarsa:'Kedaluwarsa'};
 function renderHist(){
@@ -384,6 +407,81 @@ function exportCSV(){
   a.download = 'ogkasir-lisensi.csv';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+/* ---------- pengguna & lisensi per akun ---------- */
+let USERS = [];
+async function loadUsers(){
+  hideErr('usersErr');
+  const { data, error } = await sb.rpc('account_users_admin', { p_limit: 200 });
+  if(error){ showErr('usersErr', rpcErr(error)); USERS = []; }
+  else USERS = data || [];
+  renderUsers();
+}
+function licBadge(u){
+  const now = Date.now();
+  const exp = u.expires_at ? Date.parse(u.expires_at) : null;
+  if(u.lic_status === 'active' && exp === null)
+    return '<span class="badge b aktif">Aktif ♾️</span>';
+  if(u.lic_status === 'active' && exp !== null && exp >= now)
+    return '<span class="badge b aktif">Aktif</span><br><span style="color:var(--mut);font-size:12px">s/d ' + fmtDate(u.expires_at) + (u.plan_label ? ' · ' + esc(u.plan_label) : '') + '</span>';
+  if(u.lic_status === 'trial')
+    return '<span class="badge b mau_habis">Trial</span>' + (exp ? '<br><span style="color:var(--mut);font-size:12px">s/d ' + fmtDate(u.expires_at) + '</span>' : '');
+  if(u.lic_status === 'suspended')
+    return '<span class="badge b kedaluwarsa">Ditangguhkan</span>';
+  if(u.lic_status === 'active' || u.lic_status === 'expired')
+    return '<span class="badge b kedaluwarsa">Kedaluwarsa</span>' + (exp ? '<br><span style="color:var(--mut);font-size:12px">' + fmtDate(u.expires_at) + '</span>' : '');
+  return '<span class="badge b">Belum ada</span>';
+}
+function renderUsers(){
+  const q = ($('usersQ').value || '').trim().toLowerCase();
+  const rows = USERS.filter(u => {
+    if(!q) return true;
+    return ((u.email||'') + ' ' + (u.display_name||'') + ' ' + (u.shop_name||'')).toLowerCase().includes(q);
+  });
+  const tb = $('usersBody');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--mut)">Belum ada pengguna terdaftar.</td></tr>';
+    return;
+  }
+  tb.innerHTML = rows.map(u => {
+    const em = esc(u.email);
+    return '<tr>' +
+      '<td><b>' + em + '</b>' +
+        (u.display_name ? '<br><span style="color:var(--mut)">' + esc(u.display_name) + '</span>' : '') +
+        (u.shop_name ? '<br><span style="color:var(--mut)">🏪 ' + esc(u.shop_name) + (u.shop_type ? ' · ' + esc(u.shop_type) : '') + '</span>' : '') + '</td>' +
+      '<td class="mono">' + (u.phone ? esc(u.phone) : '–') + '</td>' +
+      '<td style="white-space:nowrap">' + fmtDate(u.user_created_at) + '</td>' +
+      '<td>' + licBadge(u) + '</td>' +
+      '<td style="white-space:nowrap">' + (u.device_count || 0) + ' / ' + (u.max_devices || 3) + '</td>' +
+      '<td style="white-space:nowrap">' +
+        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',30,\'30 hari\')">+30 hari</button> ' +
+        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',90,\'90 hari\')">+90</button> ' +
+        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',365,\'1 tahun\')">+1 thn</button> ' +
+        '<button class="btn ghost sm" onclick="grantLic(\'' + em + '\',-1,\'Unlimited\')">♾️</button> ' +
+        '<button class="btn ghost sm" style="color:var(--red)" onclick="grantLic(\'' + em + '\',0,null)">Cabut</button>' +
+      '</td></tr>';
+  }).join('');
+}
+async function grantLic(email, days, label){
+  const u = USERS.find(x => x.email === email);
+  let msg;
+  if(days > 0){
+    const base = u && u.expires_at && Date.parse(u.expires_at) > Date.now() ? Date.parse(u.expires_at) : Date.now();
+    const baru = new Date(base + days * 86400000);
+    msg = 'Tambah ' + days + ' hari lisensi untuk ' + email + '?\nBerlaku sampai: ' +
+      baru.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+  } else if(days === -1){
+    msg = 'Jadikan lisensi ' + email + ' UNLIMITED (tanpa kedaluwarsa)?';
+  } else {
+    msg = 'CABUT lisensi ' + email + '? Akun kembali ke status belum berlisensi.';
+  }
+  if(!confirm(msg)) return;
+  const { error } = await sb.rpc('account_license_grant', {
+    p_email: email, p_days: days, p_plan_label: label
+  });
+  if(error){ alert(rpcErr(error)); return; }
+  loadUsers();
 }
 
 /* ---------- verifikasi ---------- */
